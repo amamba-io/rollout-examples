@@ -1,0 +1,22 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: dubbo
+  namespace: dubbo
+  labels:
+    app: dubbo
+    istio: ingressgateway
+    istio.io/rev: default
+    mspider.io/mesh-gateway-name: dubbo
+spec:
+  ports:
+    - name: tcp-0
+      protocol: TCP
+      port: 80
+      targetPort: 8080
+      nodePort: 30584
+  selector:
+    app: dubbo
+    istio: ingressgateway
+    mspider.io/mesh-gateway-name: dubbo
+  type: LoadBalancer

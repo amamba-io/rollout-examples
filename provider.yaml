@@ -1,0 +1,104 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: dubbo3-provider-v1
+  namespace: dubbo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dubbo3-provider
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: dubbo3-provider
+        sidecar.istio.io/inject: 'true'
+        version: v1
+    spec:
+      containers:
+        - name: container-1
+          image: release-ci.daocloud.io/mspider/spring-dubbo3-provider:v0.2
+          resources:
+            limits:
+              cpu: 250m
+              memory: 512Mi
+            requests:
+              cpu: 250m
+              memory: 512Mi
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: dubbo3-provider
+  namespace: dubbo
+spec:
+  ports:
+    - name: grpc-20880
+      protocol: TCP
+      port: 20880
+      targetPort: 20880
+  selector:
+    app: dubbo3-provider
+  type: ClusterIP
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: dubbo-provider
+  namespace: dubbo
+spec:
+  host: dubbo3-provider
+  subsets:
+    - labels:
+        version: v1
+      name: v1
+    - labels:
+        version: v2
+      name: v2
+    - labels:
+        version: v3
+      name: v3
+  trafficPolicy:
+    connectionPool:
+      http:
+        http2MaxRequests: 10000
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: provider
+  namespace: dubbo
+spec:
+  gateways:
+    - undefined/undefined
+    - mesh
+  hosts:
+    - dubbo3-provider
+  http:
+    - match:
+        - headers:
+            lane:
+              exact: test-v1
+      route:
+        - destination:
+            host: dubbo3-provider.dubbo.svc.cluster.local
+            port:
+              number: 20880
+            subset: v1
+    - match:
+        - headers:
+            lane:
+              exact: test-v2
+      route:
+        - destination:
+            host: dubbo3-provider.dubbo.svc.cluster.local
+            port:
+              number: 20880
+            subset: v2
+    - route:
+        - destination:
+            host: dubbo3-provider.dubbo.svc.cluster.local
+            port:
+              number: 20880
+            subset: v3
