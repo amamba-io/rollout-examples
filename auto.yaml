@@ -2,7 +2,6 @@ kind: Service
 apiVersion: v1
 metadata:
   name: dubbo
-  namespace: dubbo
   labels:
     app: dubbo
     istio: ingressgateway

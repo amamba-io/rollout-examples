@@ -2,7 +2,6 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: dubbo3-provider-v1
-  namespace: dubbo
 spec:
   replicas: 1
   selector:
@@ -27,11 +26,66 @@ spec:
               cpu: 250m
               memory: 512Mi
 ---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: dubbo3-provider-v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dubbo3-provider
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: dubbo3-provider
+        sidecar.istio.io/inject: 'true'
+        version: v2
+    spec:
+      containers:
+        - name: container-1
+          image: release-ci.daocloud.io/mspider/spring-dubbo3-provider:v0.2
+          resources:
+            limits:
+              cpu: 250m
+              memory: 512Mi
+            requests:
+              cpu: 250m
+              memory: 512Mi
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: dubbo3-provider-v3
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dubbo3-provider
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: dubbo3-provider
+        sidecar.istio.io/inject: 'true'
+        version: v3
+    spec:
+      containers:
+        - name: container-1
+          image: release-ci.daocloud.io/mspider/spring-dubbo3-provider:v0.2
+          resources:
+            limits:
+              cpu: 250m
+              memory: 512Mi
+            requests:
+              cpu: 250m
+              memory: 512Mi
+---
 kind: Service
 apiVersion: v1
 metadata:
   name: dubbo3-provider
-  namespace: dubbo
 spec:
   ports:
     - name: grpc-20880
@@ -46,7 +100,6 @@ apiVersion: networking.istio.io/v1beta1
 kind: DestinationRule
 metadata:
   name: dubbo-provider
-  namespace: dubbo
 spec:
   host: dubbo3-provider
   subsets:
@@ -68,7 +121,6 @@ apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
   name: provider
-  namespace: dubbo
 spec:
   gateways:
     - undefined/undefined
