@@ -14,4 +14,47 @@ We have 3 branches:
 2. `release-v2.0`: the upgraded version of the service, with newly created version `2.0` respectively;
 3. `release-v3.0`: the upgraded version of the service, with newly created version `3.0` respectively, and removed the old version `1.0`;
 
-gateway 是由管理员提前在集群中部署好的，provider和consumer服务以及相应的策略通过gitops部署。
+gateway的实例是由管理员提前在集群中部署好的，provider和consumer服务以及相应的策略通过 gitops 部署。
+
+还需要创建如下Service和AuthorizationPolicy
+
+```
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: istio-ingressgateway
+    istio: ingressgateway
+  name: istio-ingressgateway
+  namespace: istio-system
+spec:
+  ports:
+    - name: dubbo-boot
+      nodePort: 31381
+      port: 9090
+      protocol: TCP
+      targetPort: 9090
+  selector:
+    app: istio-ingressgateway
+    istio: ingressgateway
+  type: NodePort
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: dubbo
+  namespace: istio-system
+spec:
+  rules:
+  - to:
+    - operation:
+        paths:
+        - /hello*
+  - from:
+    - source:
+        requestPrincipals:
+        - '*'
+  selector:
+    matchLabels:
+      app: istio-ingressgateway
+```
