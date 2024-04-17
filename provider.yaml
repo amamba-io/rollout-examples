@@ -2,6 +2,8 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: dubbo3-provider-v1
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
 spec:
   replicas: 1
   selector:
@@ -29,6 +31,8 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: dubbo3-provider-v2
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
 spec:
   replicas: 1
   selector:
@@ -57,6 +61,8 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: dubbo3-provider-v3
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
 spec:
   replicas: 1
   selector:
@@ -85,6 +91,8 @@ kind: Service
 apiVersion: v1
 metadata:
   name: dubbo3-provider
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
 spec:
   ports:
     - name: grpc-20880
@@ -99,6 +107,8 @@ apiVersion: networking.istio.io/v1beta1
 kind: DestinationRule
 metadata:
   name: dubbo-provider
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   host: dubbo3-provider
   subsets:
@@ -120,6 +130,8 @@ apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
   name: provider
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
 spec:
   gateways:
     - mesh

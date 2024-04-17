@@ -2,6 +2,8 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: dubbo3-consumer-v1
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
 spec:
   replicas: 1
   selector:
@@ -32,6 +34,8 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: dubbo3-consumer-v2
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
 spec:
   replicas: 1
   selector:
@@ -62,6 +66,8 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: dubbo3-consumer-v3
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
 spec:
   replicas: 1
   selector:
@@ -92,6 +98,8 @@ kind: Service
 apiVersion: v1
 metadata:
   name: dubbo3-consumer
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
 spec:
   ports:
     - name: http
@@ -106,6 +114,8 @@ apiVersion: networking.istio.io/v1beta1
 kind: DestinationRule
 metadata:
   name: dubbo-consumer
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   host: dubbo3-consumer
   subsets:
@@ -127,6 +137,8 @@ apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
   name: consumer
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
 spec:
   gateways:
     - dubbo
@@ -145,7 +157,7 @@ spec:
         - destination:
             host: dubbo3-consumer
             port:
-              number: 8080
+              number: 9090
             subset: v1
     - headers:
         request:
@@ -159,7 +171,7 @@ spec:
         - destination:
             host: dubbo3-consumer
             port:
-              number: 8080
+              number: 9090
             subset: v2
     - headers:
         request:
@@ -173,7 +185,7 @@ spec:
         - destination:
             host: dubbo3-consumer
             port:
-              number: 8080
+              number: 9090
             subset: v3
     - route:
         - destination:
