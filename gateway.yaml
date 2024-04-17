@@ -4,13 +4,11 @@ metadata:
   name: dubbo
 spec:
   selector:
-    app: dubbo
-    mspider.io/mesh-gateway-name: dubbo
+    istio: ingressgateway
   servers:
     - hosts:
         - '*'
       port:
         name: http
-        number: 8080
+        number: 9090
         protocol: HTTP
-

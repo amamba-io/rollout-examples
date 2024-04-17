@@ -94,9 +94,9 @@ metadata:
   name: dubbo3-consumer
 spec:
   ports:
-    - name: http-8080
+    - name: http
       protocol: TCP
-      port: 8080
+      port: 9090
       targetPort: 8080
   selector:
     app: dubbo3-consumer
@@ -112,7 +112,7 @@ spec:
     - labels:
         version: v1
       name: v1
-    - labels:
+- labels:
         version: v2
       name: v2
     - labels:
@@ -129,11 +129,11 @@ metadata:
   name: consumer
 spec:
   gateways:
-    - dubbo/dubbo
+    - dubbo
   hosts:
     - '*'
   http:
-    - headers:
+- headers:
         request:
           add:
             lane: test-v1
@@ -143,7 +143,7 @@ spec:
               exact: test-v1
       route:
         - destination:
-            host: dubbo3-consumer.dubbo.svc.cluster.local
+            host: dubbo3-consumer
             port:
               number: 8080
             subset: v1
@@ -157,7 +157,7 @@ spec:
               exact: test-v2
       route:
         - destination:
-            host: dubbo3-consumer.dubbo.svc.cluster.local
+            host: dubbo3-consumer
             port:
               number: 8080
             subset: v2
@@ -171,13 +171,13 @@ spec:
               exact: test-v3
       route:
         - destination:
-            host: dubbo3-consumer.dubbo.svc.cluster.local
+            host: dubbo3-consumer
             port:
               number: 8080
             subset: v3
     - route:
         - destination:
-            host: dubbo3-consumer.dubbo.svc.cluster.local
+            host: dubbo3-consumer
             port:
-              number: 8080
+              number: 9090
             subset: v1
