@@ -2,6 +2,8 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: dubbo3-consumer-v1
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
 spec:
   replicas: 1
   selector:
@@ -32,6 +34,8 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: dubbo3-consumer-v2
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
 spec:
   replicas: 1
   selector:
@@ -62,6 +66,8 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: dubbo3-consumer-v3
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
 spec:
   replicas: 1
   selector:
@@ -92,11 +98,13 @@ kind: Service
 apiVersion: v1
 metadata:
   name: dubbo3-consumer
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
 spec:
   ports:
-    - name: http-8080
+    - name: http
       protocol: TCP
-      port: 8080
+      port: 9090
       targetPort: 8080
   selector:
     app: dubbo3-consumer
@@ -106,6 +114,8 @@ apiVersion: networking.istio.io/v1beta1
 kind: DestinationRule
 metadata:
   name: dubbo-consumer
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   host: dubbo3-consumer
   subsets:
@@ -127,9 +137,11 @@ apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
   name: consumer
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
 spec:
   gateways:
-    - dubbo/dubbo
+    - dubbo
   hosts:
     - '*'
   http:
@@ -143,9 +155,9 @@ spec:
               exact: test-v1
       route:
         - destination:
-            host: dubbo3-consumer.dubbo.svc.cluster.local
+            host: dubbo3-consumer
             port:
-              number: 8080
+              number: 9090
             subset: v1
     - headers:
         request:
@@ -157,9 +169,9 @@ spec:
               exact: test-v2
       route:
         - destination:
-            host: dubbo3-consumer.dubbo.svc.cluster.local
+            host: dubbo3-consumer
             port:
-              number: 8080
+              number: 9090
             subset: v2
     - headers:
         request:
@@ -171,13 +183,13 @@ spec:
               exact: test-v3
       route:
         - destination:
-            host: dubbo3-consumer.dubbo.svc.cluster.local
+            host: dubbo3-consumer
             port:
-              number: 8080
+              number: 9090
             subset: v3
     - route:
         - destination:
-            host: dubbo3-consumer.dubbo.svc.cluster.local
+            host: dubbo3-consumer
             port:
-              number: 8080
+              number: 9090
             subset: v1
