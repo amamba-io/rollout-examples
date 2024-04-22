@@ -1,5 +1,6 @@
-kind: Deployment
-apiVersion: apps/v1
+---
+kind: Rollout
+apiVersion: argoproj.io/v1alpha1
 metadata:
   name: dubbo3-provider-v1
   annotations:
@@ -13,7 +14,7 @@ spec:
     metadata:
       labels:
         app: dubbo3-provider
-        sidecar.istio.io/inject: 'true'
+        sidecar.istio.io/inject: "true"
         version: v1
     spec:
       containers:
@@ -26,66 +27,25 @@ spec:
             requests:
               cpu: 250m
               memory: 512Mi
----
-kind: Deployment
-apiVersion: apps/v1
-metadata:
-  name: dubbo3-provider-v2
-  annotations:
-    argocd.argoproj.io/sync-wave: "0"
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: dubbo3-provider
-  template:
-    metadata:
-      creationTimestamp: null
-      labels:
-        app: dubbo3-provider
-        sidecar.istio.io/inject: 'true'
-        version: v2
-    spec:
-      containers:
-        - name: container-1
-          image: release-ci.daocloud.io/mspider/spring-dubbo3-provider:v0.2
-          resources:
-            limits:
-              cpu: 250m
-              memory: 512Mi
-            requests:
-              cpu: 250m
-              memory: 512Mi
----
-kind: Deployment
-apiVersion: apps/v1
-metadata:
-  name: dubbo3-provider-v3
-  annotations:
-    argocd.argoproj.io/sync-wave: "0"
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: dubbo3-provider
-  template:
-    metadata:
-      creationTimestamp: null
-      labels:
-        app: dubbo3-provider
-        sidecar.istio.io/inject: 'true'
-        version: v3
-    spec:
-      containers:
-        - name: container-1
-          image: release-ci.daocloud.io/mspider/spring-dubbo3-provider:v0.2
-          resources:
-            limits:
-              cpu: 250m
-              memory: 512Mi
-            requests:
-              cpu: 250m
-              memory: 512Mi
+  strategy:
+    canary:
+      trafficRouting:
+        istio:
+          virtualService:
+            name: provider
+            routes:
+              - test-v1
+          destinationRule:
+            name: dubbo-provider
+            stableSubsetName: stable
+            canarySubsetName: canary
+      steps:
+        - setWeight: 5
+        - pause:
+            duration: 10m
+        - setWeight: 50
+        - pause:
+            duration: 10m
 ---
 kind: Service
 apiVersion: v1
@@ -102,29 +62,7 @@ spec:
   selector:
     app: dubbo3-provider
   type: ClusterIP
----
-apiVersion: networking.istio.io/v1beta1
-kind: DestinationRule
-metadata:
-  name: dubbo-provider
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
-spec:
-  host: dubbo3-provider
-  subsets:
-    - labels:
-        version: v1
-      name: v1
-- labels:
-        version: v2
-      name: v2
-    - labels:
-        version: v3
-      name: v3
-  trafficPolicy:
-    connectionPool:
-      http:
-        http2MaxRequests: 10000
+
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
@@ -138,7 +76,8 @@ spec:
   hosts:
     - dubbo3-provider
   http:
-    - match:
+    - name: test-v1
+      match:
         - headers:
             lane:
               exact: test-v1
@@ -147,20 +86,37 @@ spec:
             host: dubbo3-provider
             port:
               number: 20880
-            subset: v1
-    - match:
-        - headers:
-            lane:
-              exact: test-v2
-      route:
+            subset: stable
+          weight: 100
         - destination:
             host: dubbo3-provider
             port:
               number: 20880
-            subset: v2
+            subset: canary
+          weight: 0
     - route:
         - destination:
             host: dubbo3-provider
             port:
               number: 20880
-            subset: v3
+            subset: v1
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: dubbo-provider
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  host: dubbo3-provider
+  subsets:
+    - labels:
+        app: dubbo3-provider
+      name: stable
+    - labels:
+        app: dubbo3-provider
+      name: canary
+  trafficPolicy:
+    connectionPool:
+      http:
+        http2MaxRequests: 10000
