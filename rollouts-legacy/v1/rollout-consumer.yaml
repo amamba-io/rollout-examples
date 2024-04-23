@@ -48,5 +48,4 @@ spec:
             - headerName: lane
               headerValue:
                 exact: test-v2
-        - setWeight: 100
         - pause: {}

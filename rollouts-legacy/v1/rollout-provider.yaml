@@ -26,9 +26,9 @@ spec:
               memory: 512Mi
   strategy:
     canary:
+      canaryService: dubbo3-provider-canary
+      stableService: dubbo3-provider
       trafficRouting:
-        canaryService: dubbo3-provider-canary
-        stableService: dubbo3-provider
         managedRoutes:
           - name: test-v2
         istio:
@@ -45,5 +45,4 @@ spec:
             - headerName: lane
               headerValue:
                 exact: test-v2
-        - setWeight: 100
         - pause: {}
