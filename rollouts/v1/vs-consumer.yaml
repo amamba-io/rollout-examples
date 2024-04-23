@@ -2,8 +2,6 @@ apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
   name: consumer
-  annotations:
-    argocd.argoproj.io/sync-wave: "2"
 spec:
   gateways:
     - dubbo

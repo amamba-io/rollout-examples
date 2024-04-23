@@ -2,8 +2,6 @@ kind: Service
 apiVersion: v1
 metadata:
   name: dubbo3-provider
-  annotations:
-    argocd.argoproj.io/sync-wave: "0"
 spec:
   ports:
     - name: grpc-20880

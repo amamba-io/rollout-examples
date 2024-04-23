@@ -18,13 +18,11 @@ spec:
             host: dubbo3-provider
             port:
               number: 20880
-            subset: stable
           weight: 100
         - destination:
-            host: dubbo3-provider
+            host: dubbo3-provider-canary
             port:
               number: 20880
-            subset: canary
           weight: 0
     - route:
         - destination:

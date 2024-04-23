@@ -1,12 +1,12 @@
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  name: provider
+  name: consumer
 spec:
   gateways:
-    - mesh
+    - dubbo
   hosts:
-    - dubbo3-provider
+    - "*"
   http:
     - name: test-v1
       match:
@@ -15,20 +15,18 @@ spec:
               exact: test-v1
       route:
         - destination:
-            host: dubbo3-provider
+            host: dubbo3-consumer
             port:
-              number: 20880
-            subset: stable
+              number: 9090
           weight: 100
         - destination:
-            host: dubbo3-provider
+            host: dubbo3-consumer-canary
             port:
-              number: 20880
-            subset: canary
+              number: 9090
           weight: 0
     - route:
         - destination:
-            host: dubbo3-provider
+            host: dubbo3-consumer
             port:
-              number: 20880
-            subset: v1
+              number: 9090
+            subset: stable

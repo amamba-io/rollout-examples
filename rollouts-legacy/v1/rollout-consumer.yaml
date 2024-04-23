@@ -29,20 +29,24 @@ spec:
               memory: 512Mi
   strategy:
     canary:
+      canaryService: dubbo3-consumer-canary
+      stableService: dubbo3-consumer
       trafficRouting:
+        managedRoutes:
+          - name: test-v2
         istio:
           virtualService:
             name: consumer
             routes:
               - test-v1
-          destinationRule:
-            name: dubbo-consumer
-            stableSubsetName: stable
-            canarySubsetName: canary
       steps:
-        - setWeight: 5
-        - pause:
-            duration: 10m
-        - setWeight: 50
-        - pause:
-            duration: 10m
+        - setCanaryScale:
+            weight: 100
+        - setHeaderRoute:
+            name: test-v2
+            match:
+            - headerName: lane
+              headerValue:
+                exact: test-v2
+        - setWeight: 100
+        - pause: {}

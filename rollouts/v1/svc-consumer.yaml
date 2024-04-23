@@ -2,8 +2,6 @@ kind: Service
 apiVersion: v1
 metadata:
   name: dubbo3-consumer
-  annotations:
-    argocd.argoproj.io/sync-wave: "0"
 spec:
   ports:
     - name: http
