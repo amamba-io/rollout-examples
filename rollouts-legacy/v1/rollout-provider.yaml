@@ -27,8 +27,8 @@ spec:
   strategy:
     canary:
       trafficRouting:
-      canaryService: dubbo3-provider-canary
-      stableService: dubbo3-provider
+        canaryService: dubbo3-provider-canary
+        stableService: dubbo3-provider
         managedRoutes:
           - name: test-v2
         istio:
