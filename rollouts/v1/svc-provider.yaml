@@ -1,0 +1,15 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: dubbo3-provider
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  ports:
+    - name: grpc-20880
+      protocol: TCP
+      port: 20880
+      targetPort: 20880
+  selector:
+    app: dubbo3-provider
+  type: ClusterIP

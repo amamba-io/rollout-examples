@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: dubbo-consumer
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  host: dubbo3-consumer
+  subsets:
+    - labels:
+        app: dubbo3-consumer
+      name: canary
+    - labels:
+        app: dubbo3-consumer
+      name: stable
+  trafficPolicy:
+    connectionPool:
+      http:
+        maxRetries: 3
