@@ -58,3 +58,17 @@ spec:
     matchLabels:
       app: istio-ingressgateway
 ```
+
+## How to validate？
+
+假设gateway通过NodePort访问，节点IP是 `172.30.40.54`，打开浏览器访问:
+
+http://172.30.40.54:31381/hello?name=test-v1
+
+返回provider/consumer 都是 v1 版本的Pod
+
+访问 http://172.30.40.54:31381/hello?name=test-v2
+
+返回provider/consumer 都是 v2 版本的Pod
+
+
