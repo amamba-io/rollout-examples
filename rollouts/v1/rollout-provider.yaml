@@ -1,7 +1,7 @@
 kind: Rollout
 apiVersion: argoproj.io/v1alpha1
 metadata:
-  name: dubbo3-provider-v1
+  name: dubbo3-provider
 spec:
   replicas: 1
   selector:
