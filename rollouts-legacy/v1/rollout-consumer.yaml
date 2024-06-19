@@ -32,8 +32,6 @@ spec:
       canaryService: dubbo3-consumer-canary
       stableService: dubbo3-consumer
       trafficRouting:
-        managedRoutes:
-          - name: test-v2
         istio:
           virtualService:
             name: consumer
@@ -41,11 +39,13 @@ spec:
               - test-v1
       steps:
         - setCanaryScale:
-            weight: 100
-        - setHeaderRoute:
-            name: test-v2
-            match:
-            - headerName: lane
-              headerValue:
-                exact: test-v2
+            weight: 20
+        - pause: {}
+        - setWeight: 20
+        - pause:
+            duration: 10m
+        - setWeight: 50
+        - pause:
+            duration: 10m
+        - setWeight: 100
         - pause: {}
