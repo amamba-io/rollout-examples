@@ -9,14 +9,6 @@ spec:
     - "*"
   http:
     - name: test-v1
-      headers:
-        request:
-          add:
-            lane: test-v1
-      match:
-        - queryParams:
-            name:
-              exact: test-v1
       route:
         - destination:
             host: dubbo3-consumer
@@ -30,9 +22,3 @@ spec:
               number: 9090
             subset: canary
           weight: 0
-    - route:
-        - destination:
-            host: dubbo3-consumer
-            port:
-              number: 9090
-            subset: stable
