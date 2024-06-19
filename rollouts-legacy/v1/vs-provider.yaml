@@ -29,4 +29,3 @@ spec:
             host: dubbo3-provider
             port:
               number: 20880
-            subset: v1

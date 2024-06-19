@@ -72,3 +72,8 @@ http://172.30.40.54:31381/hello?name=test-v1
 返回provider/consumer 都是 v2 版本的Pod
 
 
+#### legacy/v1
+
+
+（不能通过浏览器访问）
+curl -s "http://172.30.40.52:32583/hello"  -H "lane: test-v2" | jq '.provider.hostname, .hostname'
