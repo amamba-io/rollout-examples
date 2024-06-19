@@ -2,6 +2,8 @@ kind: Rollout
 apiVersion: argoproj.io/v1alpha1
 metadata:
   name: dubbo3-consumer
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
 spec:
   replicas: 1
   selector:
@@ -12,7 +14,7 @@ spec:
       labels:
         app: dubbo3-consumer
         sidecar.istio.io/inject: "true"
-        version: v1
+        version: v2
     spec:
       containers:
         - name: container-1
