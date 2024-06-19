@@ -17,13 +17,6 @@ spec:
       containers:
         - name: container-1
           image: release-ci.daocloud.io/mspider/spring-dubbo3-provider:v0.2
-          resources:
-            limits:
-              cpu: 250m
-              memory: 512Mi
-            requests:
-              cpu: 250m
-              memory: 512Mi
           readinessProbe:
             initialDelaySeconds: 15
             periodSeconds: 10
