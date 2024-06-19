@@ -27,6 +27,12 @@ spec:
             requests:
               cpu: 250m
               memory: 512Mi
+          readinessProbe:
+            httpGet:
+              path: /hello
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 3
   strategy:
     canary:
       canaryService: dubbo3-consumer-canary

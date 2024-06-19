@@ -24,6 +24,11 @@ spec:
             requests:
               cpu: 250m
               memory: 512Mi
+          readinessProbe:
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            tcpSocket:
+              port: 20880
   strategy:
     canary:
       trafficRouting:
